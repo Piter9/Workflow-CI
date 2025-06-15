@@ -46,9 +46,9 @@ with mlflow.start_run():
     # Prediksi dan hitung metrik
     y_pred = best_model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
-    prec = precision_score(y_test, y_pred, average='macro')
-    rec = recall_score(y_test, y_pred, average='macro')
-    f1 = f1_score(y_test, y_pred, average='macro')
+    prec = precision_score(y_test, y_pred, average='macro', zero_division=0)
+    rec = recall_score(y_test, y_pred, average='macro', zero_division=0)
+    f1 = f1_score(y_test, y_pred, average='macro', zero_division=0)
 
     # Logging manual metrik
     mlflow.log_metric("accuracy", acc)
@@ -61,8 +61,8 @@ with mlflow.start_run():
 
     # Simpan model ke mlruns/0/<run_id>/artifacts/model
     mlflow.sklearn.log_model(
-    best_model,
-    "model",
+    sk_model=best_model,
+    artifact_path="model",
     input_example=X_test.iloc[:5],  # Contoh input
     signature=mlflow.models.infer_signature(X_test, best_model.predict(X_train)) 
 )

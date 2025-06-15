@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/ASUS/Desktop/Workflow-CI/mlruns/0/models/m-a88b5191b858433e86a7afbdc029fa45/artifacts
+creation_timestamp: 1750022338181
+experiment_id: '0'
+last_updated_timestamp: 1750022347024
+model_id: m-a88b5191b858433e86a7afbdc029fa45
+model_type: null
+name: model
+source_run_id: 60cd1f4cec9f41b0b331469305730708
+status: 2
+status_message: null

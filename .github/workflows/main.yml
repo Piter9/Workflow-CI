@@ -47,11 +47,11 @@ jobs:
         working-directory: ./MLProject
         run: |
           echo "Mencari RUN_ID terbaru dari mlruns..."
-          RUN_ID="8b7cdbfbaa0a4a2bb13695d22474ba1a"
+          RUN_ID="m-c80402aa5f094cbfb50a0d942b93d74c"
           echo "RUN_ID=$RUN_ID"
 
           echo "Build Docker image dari model MLflow..."
-          mlflow models build-docker -m mlruns/0/$RUN_ID/artifacts/model -n ${{ secrets.DOCKER_USERNAME }}/mlflow-model:latest
+          mlflow models build-docker -m mlruns/0/models/$RUN_ID/artifacts/model -n ${{ secrets.DOCKER_USERNAME }}/mlflow-model:latest
 
           echo "Login ke Docker Hub..."
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
