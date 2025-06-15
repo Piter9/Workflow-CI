@@ -47,26 +47,16 @@ jobs:
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "Latest RUN_ID: $RUN_ID"
 
-      # Step 6: Upload artifact model ke GitHub
-      - name: Upload MLflow model artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: stroke-model
-          path: mlruns/0/${{ env.RUN_ID }}/artifacts/model
-
+    
       # Step 7: Commit mlruns ke repo GitHub
       - name: Save mlruns to repository
         run: |
           git config --global user.name "${{ secrets.USERNAME }}"
           git config --global user.email "${{ secrets.EMAIL }}"
-          git pull origin main
           git add mlruns/
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Add mlruns/"
-            git push origin main
-          fi
+          git commit -m "Add mlruns/"
+          git push origin main
+          
 
       # Step 8: Build Docker image dari model
       - name: Build Docker image from model
