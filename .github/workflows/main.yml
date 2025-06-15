@@ -1,74 +1,60 @@
-name: CI Pipeline
+name: Train and Deploy MLflow Model
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    paths:
+      - "MLProject/**"
   workflow_dispatch:
 
-env:
-  CSV_URL: "MLProject/healthcare-dataset-stroke_preprocessing.csv"
-
 jobs:
-  build-and-deploy:
+  train-model:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Clone repo
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Setup Python
-      - name: Setup Python 3.12.7
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12.7"
+          python-version: "3.10"
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install -r MLProject/requirements.txt
-          pip install mlflow
+          pip install mlflow scikit-learn pandas
 
-      # Step 4: Jalankan MLflow Project
-      - name: Run MLflow project
+      - name: Run MLflow Project
         working-directory: ./MLProject
         run: |
           export MLFLOW_ARTIFACT_URI=file://$(pwd)/mlruns
           mlflow run . --env-manager=local -P data_path="healthcare-dataset-stroke_preprocessing.csv"
 
-      # Step 5: Dapatkan RUN_ID terbaru
-      - name: Get latest RUN_ID
-        id: get_run_id
-        run: |
-          RUN_ID=$(ls -t mlruns/0 | head -n1)
-          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-          echo "Latest RUN_ID: $RUN_ID"
+      - name: Upload Model Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model
+          path: MLProject/mlruns/
 
-    
-      # Step 7: Commit mlruns ke repo GitHub
-      - name: Save mlruns to repository
-        run: |
-          git config --global user.name "${{ secrets.USERNAME }}"
-          git config --global user.email "${{ secrets.EMAIL }}"
-          git add mlruns/
-          git commit -m "Add mlruns/"
-          git push origin main
-          
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
 
-      # Step 8: Build Docker image dari model
-      - name: Build Docker image from model
-        run: |
-          mlflow models build-docker -m mlruns/0/${{ env.RUN_ID }}/artifacts/model -n stroke-predictor
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Step 9: Push Docker image ke Docker Hub
-      - name: Push Docker image to Docker Hub
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and Push Docker Image
+        working-directory: ./MLProject
         run: |
-          echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          docker tag stroke-predictor $DOCKERHUB_USERNAME/stroke-predictor:latest
-          docker push $DOCKERHUB_USERNAME/stroke-predictor:latest
+          echo "Mencari RUN_ID terbaru dari mlruns..."
+          RUN_ID="m-c80402aa5f094cbfb50a0d942b93d74c"
+          echo "RUN_ID=$RUN_ID"
+
+          echo "Build Docker image dari model MLflow..."
+          mlflow models build-docker -m mlruns/0/models/$RUN_ID/artifacts/ -n ${{ secrets.DOCKER_USERNAME }}/mlflow-model:latest
+
+          echo "Login ke Docker Hub..."
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+          echo "Push image ke Docker Hub..."
+          docker push ${{ secrets.DOCKER_USERNAME }}/mlflow-model:latest
