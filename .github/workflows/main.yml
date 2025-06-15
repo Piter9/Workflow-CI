@@ -34,8 +34,10 @@ jobs:
 
       # Step 4: Jalankan MLflow Project
       - name: Run MLflow project
+        working-directory: ./MLProject
         run: |
-          mlflow run MLProject --env-manager=local -P data_path="MLProject/healthcare-dataset-stroke_preprocessing.csv"
+          export MLFLOW_ARTIFACT_URI=file://$(pwd)/mlruns
+          mlflow run MLProject --env-manager=local -P data_path="healthcare-dataset-stroke_preprocessing.csv"
 
       # Step 5: Dapatkan RUN_ID terbaru
       - name: Get latest RUN_ID
