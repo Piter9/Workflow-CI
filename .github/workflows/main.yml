@@ -26,8 +26,10 @@ jobs:
       - name: Run training script with MLflow
         run: |
           working-directory: ./MLProject
-          python modelling.py --data_path healthcare-dataset-stroke_preprocessing.csv.csv
-
+          working-directory: ./MLProject
+        run: |
+          export MLFLOW_ARTIFACT_URI=file://$(pwd)/mlruns
+          mlflow run . --env-manager=local -P data_path="healthcare-dataset-stroke_preprocessing.csv"
       - name: Debug - List mlruns folder
         run: ls -R mlruns/
 
