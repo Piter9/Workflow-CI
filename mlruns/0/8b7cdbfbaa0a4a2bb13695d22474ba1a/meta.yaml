@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/ASUS/Desktop/Workflow-CI/mlruns/0/8b7cdbfbaa0a4a2bb13695d22474ba1a/artifacts
+end_time: 1750021188514
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 8b7cdbfbaa0a4a2bb13695d22474ba1a
+run_name: rumbling-croc-664
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1750021154351
+status: 3
+tags: []
+user_id: ASUS
