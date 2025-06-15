@@ -29,7 +29,7 @@ jobs:
       working-directory: ./MLProject
       run: |
         export MLFLOW_ARTIFACT_URI=file://$(pwd)/mlruns
-        mlflow run . --env-manager=local -P data_path="namadataset_preprocessing/dataset.csv"
+        mlflow run . --env-manager=local -P data_path="MLProject/healthcare-dataset-stroke_preprocessing.csv"
 
     - name: Upload Model Artifact
       uses: actions/upload-artifact@v4
