@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/ASUS/Desktop/Workflow-CI/mlruns/0/09d34e859fb8408fb547e652f60c25cf/artifacts
+end_time: 1750019257058
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 09d34e859fb8408fb547e652f60c25cf
+run_name: delicate-fawn-866
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1750019224651
+status: 3
+tags: []
+user_id: ASUS
