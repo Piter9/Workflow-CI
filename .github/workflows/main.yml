@@ -57,4 +57,3 @@ jobs:
 
           echo "Push image ke Docker Hub..."
           docker push ${{ secrets.USERNAME }}/mlflow-model:latest
-_
