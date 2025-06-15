@@ -2,7 +2,7 @@ name: Train and Deploy Model
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -10,43 +10,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-    - name: Install dependencies
-      run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-    - name: Run training script with MLflow
-      run: |
-        python modelling.py --data_path data/dataset.csv
+      - name: Run training script with MLflow
+        run: |
+          python modelling.py --data_path data/dataset.csv
 
-    - name: Get latest RUN_ID
-      id: get_run_id
-      run: |
-        RUN_ID=$(ls -t mlruns/0 | head -n1)
-        echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-        echo "Latest RUN_ID: $RUN_ID"
+      - name: Get latest RUN_ID
+        id: get_run_id
+        run: |
+          RUN_ID=$(ls -t mlruns/0 | head -n1)
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          echo "Latest RUN_ID: $RUN_ID"
 
-    - name: Upload model artifact to GitHub
-      uses: actions/upload-artifact@v3
-      with:
-        name: mlflow-model
-        path: mlruns/0/${{ env.RUN_ID }}/artifacts/model
+      - name: Upload model artifact to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-model
+          path: mlruns/0/${{ env.RUN_ID }}/artifacts/model
 
-    - name: Build Docker image from MLflow model
-      run: |
-        mlflow models build-docker -m mlruns/0/${{ env.RUN_ID }}/artifacts/model -n stroke-predictor
+      - name: Build Docker image from MLflow model
+        run: |
+          mlflow models build-docker -m mlruns/0/${{ env.RUN_ID }}/artifacts/model -n stroke-predictor
 
-    - name: Login & Push Docker image to Docker Hub
-      env:
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      run: |
-        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-        docker tag stroke-predictor $DOCKERHUB_USERNAME/stroke-predictor:latest
-        docker push $DOCKERHUB_USERNAME/stroke-predictor:latest
+      - name: Login & Push Docker image to Docker Hub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          docker tag stroke-predictor $DOCKERHUB_USERNAME/stroke-predictor:latest
+          docker push $DOCKERHUB_USERNAME/stroke-predictor:latest
