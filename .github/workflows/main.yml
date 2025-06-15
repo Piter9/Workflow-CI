@@ -46,6 +46,10 @@ jobs:
       - name: Build and Push Docker Image
         working-directory: ./MLProject
         run: |
-          RUN_ID=$(ls mlruns/0 | head -n 1)
-          mlflow models build-docker -m mlruns/0/$RUN_ID/artifacts/model -n ${{ secrets.DOCKER_USERNAME }}/mlflow-model:latest
+          echo "Getting latest run ID from mlflow..."
+          RUN_ID=$(mlflow experiments list --view-all | grep 'Default' | awk '{print $1}' | xargs -I {} mlflow runs list -e {} | awk 'NR==2 {print $1}')
+          echo "Using RUN_ID=$RUN_ID"
+    
+          mlflow models build-docker -m runs:/$RUN_ID/model -n ${{ secrets.DOCKER_USERNAME }}/mlflow-model:latest
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
           docker push ${{ secrets.DOCKER_USERNAME }}/mlflow-model:latest
