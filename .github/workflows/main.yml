@@ -2,7 +2,8 @@ name: Train and Deploy MLflow Model
 
 on:
   push:
-    branches: [ main ]
+    paths:
+      - 'MLProject/**'
   workflow_dispatch:
 
 jobs:
