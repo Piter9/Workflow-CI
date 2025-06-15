@@ -47,7 +47,7 @@ jobs:
         working-directory: ./MLProject
         run: |
           echo "Mencari RUN_ID terbaru dari mlruns..."
-          RUN_ID=$(ls -t mlruns/0 | head -n 1)
+          RUN_ID="8b7cdbfbaa0a4a2bb13695d22474ba1a"
           echo "RUN_ID=$RUN_ID"
 
           echo "Build Docker image dari model MLflow..."
