@@ -40,7 +40,7 @@ jobs:
       - name: List mlruns folder
         run: |
           echo "Isi mlruns/0:"
-          ls -MLProject/mlruns/0/models || true
+          ls -r MLProject/mlruns/0/models || true
 
       - name: Get latest RUN_ID
         id: get_run_id
@@ -53,7 +53,7 @@ jobs:
       - name: Copy and Commit Model Artifacts
         run: |
           mkdir -p model_storage
-          cp -r MLProject/mlruns/0/models/${RUN_ID}/artifacts/* model_storage/
+          cp -r mlruns/0/models/${RUN_ID}/artifacts/* model_storage/
 
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
